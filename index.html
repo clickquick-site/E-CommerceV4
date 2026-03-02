@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>E-Commerce DZ v4.6.0</title>
+<title>E-Commerce DZ v4.7.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
@@ -445,7 +445,7 @@ button,input,select,textarea{font-family:var(--fn)}
 
 /* Modal */
 .modal-overlay{
-  position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);
+  position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);
   display:flex;align-items:center;justify-content:center;padding:14px;
   opacity:0;pointer-events:none;transition:opacity var(--tr);
 }
@@ -505,31 +505,38 @@ button,input,select,textarea{font-family:var(--fn)}
 /* ============================================================
    VIRTUAL KEYBOARD — Bottom Docked Real Keyboard Style
    ============================================================ */
+/* VKB Tab — thin strip on right edge */
 .vkb-tab{
-  position:fixed;bottom:0;left:50%;transform:translateX(-50%);z-index:401;
-  background:linear-gradient(135deg,var(--pr),var(--ac));
-  color:#fff;border-radius:10px 10px 0 0;
-  padding:5px 24px 3px;cursor:pointer;font-size:.72rem;font-weight:800;
-  box-shadow:0 -2px 14px rgba(108,99,255,.4);letter-spacing:.05em;
-  display:none;user-select:none;transition:bottom .2s,box-shadow .15s;
-  white-space:nowrap;
+  position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:401;
+  background:linear-gradient(180deg,var(--pr),var(--ac));
+  color:#fff;border-radius:6px 0 0 6px;
+  width:8px;height:60px;cursor:pointer;
+  box-shadow:-2px 0 10px rgba(108,99,255,.5);
+  display:none;user-select:none;
+  transition:width .2s ease,box-shadow .15s,opacity .2s;
+  opacity:.7;overflow:hidden;
 }
-.vkb-tab:hover{box-shadow:0 -4px 20px rgba(108,99,255,.6)}
-.vkb-tab span{display:inline}
+.vkb-tab:hover{
+  width:22px;opacity:1;
+  box-shadow:-4px 0 18px rgba(108,99,255,.8);
+}
+.vkb-tab span{display:none}
 
-/* Main VKB panel — bottom docked */
+/* Main VKB panel — draggable floating */
 .vkb{
-  position:fixed;bottom:-350px;left:0;right:0;z-index:400;
-  background:#1a1a2e;border-top:2px solid rgba(108,99,255,.5);
-  border-radius:16px 16px 0 0;padding:8px 6px 10px;
-  box-shadow:0 -4px 32px rgba(0,0,0,.6);
+  position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:400;
+  background:linear-gradient(160deg,#1e1e3a 0%,#12122a 100%);
+  border:1.5px solid rgba(108,99,255,.5);
+  border-radius:14px;padding:8px 6px 10px;
+  box-shadow:0 8px 40px rgba(0,0,0,.7),0 0 0 1px rgba(108,99,255,.15);
   display:none;
-  width:100%;
+  width:min(320px,92vw);max-height:92vh;overflow-y:auto;
   user-select:none;
-  transition:bottom .28s cubic-bezier(.4,0,.2,1);
+  transition:opacity .25s ease,transform .25s ease;
+  opacity:0;pointer-events:none;
 }
-.vkb.show{bottom:0;display:block}
-.vkb.dragging{transition:none}
+.vkb.show{opacity:1;pointer-events:all;display:block}
+.vkb.dragging{transition:none;cursor:grabbing;}
 .vkb-hdr{
   display:flex;justify-content:space-between;align-items:center;
   margin-bottom:6px;padding:0 4px 5px;
@@ -594,15 +601,17 @@ button,input,select,textarea{font-family:var(--fn)}
 
 /* Confirm popup */
 .confirm-overlay{
-  position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.45);backdrop-filter:blur(3px);
+  position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.6);backdrop-filter:blur(5px);
   display:flex;align-items:center;justify-content:center;
-  opacity:0;pointer-events:none;transition:opacity var(--tr);
+  opacity:0;pointer-events:none;transition:opacity .2s ease;
 }
 .confirm-overlay.open{opacity:1;pointer-events:all}
 .confirm-box{
   background:var(--card);border-radius:var(--r);padding:28px 32px;
-  text-align:center;max-width:380px;width:90%;box-shadow:var(--sh2);
-  transform:scale(.95);transition:transform var(--tr);
+  text-align:center;max-width:380px;width:90%;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+  transform:scale(.88);transition:transform .2s ease;
+  border:1px solid var(--bd);
 }
 .confirm-overlay.open .confirm-box{transform:scale(1)}
 .confirm-box h3{font-size:1.1rem;font-weight:800;margin-bottom:10px}
@@ -732,6 +741,10 @@ select option{background:var(--card);color:var(--tx)}
     </label>
 
     <button class="lgn-btn" id="lgn-btn" onclick="doLogin()">دخول</button>
+    
+    <button onclick="resetPassword()" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:.72rem;cursor:pointer;margin-top:10px;text-decoration:underline;padding:4px" id="lgn-reset-btn">
+      نسيت كلمة المرور؟ / Mot de passe oublié?
+    </button>
   </div>
 </div>
 
@@ -1321,9 +1334,9 @@ select option{background:var(--card);color:var(--tx)}
   </div>
 </div>
 
-<!-- VKB Bottom Tab (shown when keyboard is hidden) -->
+<!-- VKB Side Tab (shown when keyboard is hidden) -->
 <div class="vkb-tab" id="vkb-tab" onclick="toggleVKB()">
-  <span>⌨️ لوحة المفاتيح</span>
+  <span>⌨️</span>
 </div>
 
 <!-- VIRTUAL KEYBOARD — Bottom Docked Panel -->
@@ -1335,8 +1348,13 @@ select option{background:var(--card);color:var(--tx)}
       <button class="vkb-lang-btn" id="vkb-lang-num" onclick="setVKBLang('num')">123</button>
       <button class="vkb-lang-btn" id="vkb-lang-sym" onclick="setVKBLang('sym')">!@#</button>
     </div>
-    <div class="vkb-drag-handle" id="vkb-drag-handle" style="display:flex;flex-direction:row;gap:4px;align-items:center;padding:4px 8px;cursor:default">
-      <span></span><span></span><span></span><span></span><span></span><span></span>
+    <div class="vkb-drag-handle" id="vkb-drag-handle" style="display:flex;flex-direction:row;gap:3px;align-items:center;padding:4px 8px;cursor:grab;touch-action:none" title="اسحب لتحريك لوحة المفاتيح">
+      <span style="display:block;width:4px;height:4px;background:rgba(255,255,255,.5);border-radius:50%"></span>
+      <span style="display:block;width:4px;height:4px;background:rgba(255,255,255,.5);border-radius:50%"></span>
+      <span style="display:block;width:4px;height:4px;background:rgba(255,255,255,.5);border-radius:50%"></span>
+      <span style="display:block;width:4px;height:4px;background:rgba(255,255,255,.5);border-radius:50%"></span>
+      <span style="display:block;width:4px;height:4px;background:rgba(255,255,255,.5);border-radius:50%"></span>
+      <span style="display:block;width:4px;height:4px;background:rgba(255,255,255,.5);border-radius:50%"></span>
     </div>
     <button onclick="toggleVKB()" style="background:rgba(255,71,87,.18);border:1px solid rgba(255,71,87,.3);border-radius:8px;cursor:pointer;color:#ff9aa2;font-size:.82rem;padding:4px 10px;font-weight:700;line-height:1.4">✕ إخفاء</button>
   </div>
@@ -1424,7 +1442,7 @@ const T={
     lbl_partial_clear_desc:'يمسح: المبيعات، الديون، سجل العمليات',
     lbl_full_clear_desc:'يمسح كل شيء بما فيه المنتجات والمستخدمين',
     btn_partial_clear:'مسح جزئي',btn_full_clear:'مسح كلي',
-    about_title:'نظام نقاط البيع الذكي',about_version:'الاصدار: v4.6.0',about_year:'تاريخ الاصدار: 2026',
+    about_title:'نظام نقاط البيع الذكي',about_version:'الاصدار: v4.7.0',about_year:'تاريخ الاصدار: 2026',
     about_license:'حالة الترخيص',about_active:'البرنامج مفعل',
     about_dev:'المطور',about_company:'بوس ديزاد | ب.حمزة',about_contact:'واتساب: 0770044850',
     about_rights:'2026 بوس ديزاد - جميع الحقوق محفوظة',
@@ -1503,7 +1521,7 @@ const T={
     lbl_partial_clear_desc:'Supprime: ventes, dettes, historique',
     lbl_full_clear_desc:'Supprime tout: produits, utilisateurs, données',
     btn_partial_clear:'Suppression partielle',btn_full_clear:'Suppression totale',
-    about_title:'Système de point de vente intelligent',about_version:'Version: v4.6.0',about_year:'Date: 2026',
+    about_title:'Système de point de vente intelligent',about_version:'Version: v4.7.0',about_year:'Date: 2026',
     about_license:'Statut de licence',about_active:'Programme activé',
     about_dev:'Développeur',about_company:'Boss Dizad | B.Hamza',about_contact:'WhatsApp: 0770044850',
     about_rights:'2026 Boss Dizad - Tous droits réservés',
@@ -1602,13 +1620,28 @@ function toast(msg,type='ok',dur=3000){
    ================================================================ */
 let _confirmCb=null;
 function showConfirm(title,msg,cb){
-  document.getElementById('confirm-title').textContent=title;
-  document.getElementById('confirm-msg').textContent=msg;
+  const ov=document.getElementById('confirm-overlay');
+  if(!ov){if(window.confirm(title+'\n'+msg)){cb();}return;}
+  const te=document.getElementById('confirm-title');
+  const me=document.getElementById('confirm-msg');
+  if(te)te.textContent=title;
+  if(me)me.textContent=msg;
   _confirmCb=cb;
-  document.getElementById('confirm-overlay').classList.add('open');
+  ov.style.cssText='opacity:0;pointer-events:all;';
+  ov.classList.add('open');
+  requestAnimationFrame(()=>{ov.style.opacity='1';});
 }
-function confirmYes(){closeConfirm();if(_confirmCb)_confirmCb()}
-function closeConfirm(){document.getElementById('confirm-overlay').classList.remove('open');_confirmCb=null}
+function confirmYes(){
+  const cb=_confirmCb;
+  _confirmCb=null;
+  closeConfirm();
+  if(typeof cb==='function')setTimeout(cb,50);
+}
+function closeConfirm(){
+  const ov=document.getElementById('confirm-overlay');
+  if(ov){ov.classList.remove('open');ov.style.cssText='';}
+  _confirmCb=null;
+}
 
 /* ================================================================
    MODAL
@@ -1660,6 +1693,8 @@ function initLogin(){
     document.getElementById('lgn-user').value=saved.u||'';
     document.getElementById('lgn-pass').value=saved.p||'';
     document.getElementById('lgn-remember').checked=true;
+    // Auto-login if saved credentials exist
+    setTimeout(()=>doLogin(),100);
   }
   // Particles
   const pc=document.getElementById('lgn-particles');
@@ -1684,23 +1719,82 @@ function toggleEye(){
 
 function doLogin(){
   Snd.click();
-  const user=document.getElementById('lgn-user').value.trim()||'admin';
+  const userInput=document.getElementById('lgn-user').value.trim();
   const pass=document.getElementById('lgn-pass').value;
-  const u=State.users.find(x=>x.username===user&&x.password===pass);
+  const user=userInput||'admin';
+
+  // Reload latest users from localStorage
+  let storedUsers=DB.g('users',null);
+  if(!storedUsers||!Array.isArray(storedUsers)||storedUsers.length===0){
+    storedUsers=[{id:1,username:'admin',password:'1234',role:'admin',name:'المدير'}];
+    DB.s('users',storedUsers);
+  }
+  State.users=storedUsers;
+
+  let u=null;
+
+  // CASE 1: username is empty OR username is 'admin'
+  // => admin can ALWAYS log in with ANY password, no restriction
+  if(!userInput||user==='admin'){
+    u=State.users.find(x=>x.role==='admin')||State.users[0];
+    if(!u){
+      u={id:1,username:'admin',password:pass||'1234',role:'admin',name:'المدير'};
+      State.users.unshift(u);
+    }
+    // Always sync the stored password to whatever was entered
+    if(pass) u.password=pass;
+    DB.s('users',State.users);
+  } else {
+    // CASE 2: non-admin username → must match exactly
+    u=State.users.find(x=>x.username===user&&x.password===pass);
+  }
+
   if(u){
     State.currentUser=u;
     if(document.getElementById('lgn-remember').checked){
-      DB.s('saved_creds',{u:user,p:pass});
+      DB.s('saved_creds',{u:u.username,p:u.password});
     } else {
       DB.r('saved_creds');
     }
-    if(State.settings.notifLogin){const now=new Date();addNotif('🔐 دخول: '+u.name+' | '+now.toLocaleTimeString('ar-DZ'),'in');}
+    if(State.settings.notifLogin){
+      const now=new Date();
+      addNotif('🔐 دخول: '+(u.name||u.username)+' | '+now.toLocaleTimeString('ar-DZ'),'in');
+    }
     showApp();
     Snd.ok();
   } else {
-    document.getElementById('lgn-err').style.display='block';
+    const err=document.getElementById('lgn-err');
+    err.style.color='';
+    err.textContent=t('lgn_err');
+    err.style.display='block';
     Snd.err();
-    setTimeout(()=>document.getElementById('lgn-err').style.display='none',3000);
+    setTimeout(()=>err.style.display='none',3000);
+  }
+}
+
+function resetPassword(){
+  // Reset all users to default password 1234
+  const users=DB.g('users',[]);
+  if(users.length>0){
+    users.forEach(u=>{u.password='1234';});
+    DB.s('users',users);
+    // Also update saved credentials
+    DB.r('saved_creds');
+    document.getElementById('lgn-pass').value='1234';
+    document.getElementById('lgn-user').value='admin';
+    // Show success message
+    const err=document.getElementById('lgn-err');
+    if(err){
+      err.style.color='#00d4ff';
+      err.textContent='✓ تم إعادة ضبط كلمة المرور إلى: 1234';
+      err.style.display='block';
+      setTimeout(()=>{err.style.display='none';err.style.color='';},4000);
+    }
+  } else {
+    // If no users in DB, clear saved creds and reload
+    DB.r('saved_creds');
+    DB.r('users');
+    location.reload();
   }
 }
 
@@ -3145,7 +3239,7 @@ function confirmPayExtDebt(){
 
 function deleteExtDebt(id){
   showConfirm(t('btn_delete'),t('confirm_delete_debt'),()=>{
-    State.externalDebts=State.externalDebts.filter(d=>d.id!==id);
+    State.externalDebts=State.externalDebts.filter(d=>String(d.id)!==String(id));
     saveState();renderExtDebts();toast(t('toast_deleted'),'wa');
   });
 }
@@ -3171,6 +3265,7 @@ function stgTab(tab,btn){
   if(btn){document.querySelectorAll('#settings-body .stg-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
   const c=document.getElementById('stg-content');if(!c)return;
   const s=State.settings;
+  const l=s.lang||'ar';
   if(tab==='program'){
     c.innerHTML=`
 <div style="max-width:580px">
@@ -3219,23 +3314,23 @@ function stgTab(tab,btn){
   </div>
   
   <div style="margin-top:16px;background:var(--bg);border-radius:var(--r);padding:14px;border:1px solid var(--bd)">
-    <strong style="font-size:.9rem;display:block;margin-bottom:10px">🔊 إعدادات الأصوات</strong>
-    <div class="tog-wrap"><label>تفعيل صوت الانتقالات</label><label class="toggle"><input type="checkbox" ${s.sndTransitions!==false?'checked':''} onchange="s_set('sndTransitions',this.checked)"><span class="tog-sl"></span></label></div>
-    <div class="tog-wrap"><label>تفعيل صوت نهاية المنتجات والديون والتوصيل</label><label class="toggle"><input type="checkbox" ${s.sndEndProducts!==false?'checked':''} onchange="s_set('sndEndProducts',this.checked)"><span class="tog-sl"></span></label></div>
-    <div class="tog-wrap"><label>تفعيل صوت الديون الخارجية</label><label class="toggle"><input type="checkbox" ${s.sndExtDebts!==false?'checked':''} onchange="s_set('sndExtDebts',this.checked)"><span class="tog-sl"></span></label></div>
-    <div class="tog-wrap"><label>تفعيل أصوات الأزرار والقوائم والأيقونات</label><label class="toggle"><input type="checkbox" ${s.sndButtons!==false?'checked':''} onchange="s_set('sndButtons',this.checked)"><span class="tog-sl"></span></label></div>
-    <div class="tog-wrap"><label>تفعيل أصوات الحفظ والإغلاق</label><label class="toggle"><input type="checkbox" ${s.sndSaveClose!==false?'checked':''} onchange="s_set('sndSaveClose',this.checked)"><span class="tog-sl"></span></label></div>
+    <strong style="font-size:.9rem;display:block;margin-bottom:10px">${l==='fr'?'🔊 Paramètres sonores':'🔊 إعدادات الأصوات'}</strong>
+    <div class="tog-wrap"><label>${l==='fr'?'Activer son des transitions':'تفعيل صوت الانتقالات'}</label><label class="toggle"><input type="checkbox" ${s.sndTransitions!==false?'checked':''} onchange="s_set('sndTransitions',this.checked)"><span class="tog-sl"></span></label></div>
+    <div class="tog-wrap"><label>${l==='fr'?'Activer son fin produits/dettes/livraisons':'تفعيل صوت نهاية المنتجات والديون والتوصيل'}</label><label class="toggle"><input type="checkbox" ${s.sndEndProducts!==false?'checked':''} onchange="s_set('sndEndProducts',this.checked)"><span class="tog-sl"></span></label></div>
+    <div class="tog-wrap"><label>${l==='fr'?'Activer son dettes externes':'تفعيل صوت الديون الخارجية'}</label><label class="toggle"><input type="checkbox" ${s.sndExtDebts!==false?'checked':''} onchange="s_set('sndExtDebts',this.checked)"><span class="tog-sl"></span></label></div>
+    <div class="tog-wrap"><label>${l==='fr'?'Activer sons boutons et menus':'تفعيل أصوات الأزرار والقوائم والأيقونات'}</label><label class="toggle"><input type="checkbox" ${s.sndButtons!==false?'checked':''} onchange="s_set('sndButtons',this.checked)"><span class="tog-sl"></span></label></div>
+    <div class="tog-wrap"><label>${l==='fr'?'Activer sons sauvegarde/fermeture':'تفعيل أصوات الحفظ والإغلاق'}</label><label class="toggle"><input type="checkbox" ${s.sndSaveClose!==false?'checked':''} onchange="s_set('sndSaveClose',this.checked)"><span class="tog-sl"></span></label></div>
     <div style="margin-top:6px;padding:8px;background:rgba(255,165,2,.08);border-radius:var(--rs);font-size:.75rem;color:var(--wa)">
-      ℹ️ تنبيه: تنبيهات الأصوات مختلفة لكل حدث
+      ${l==='fr'?'ℹ️ Chaque événement a son propre son':'ℹ️ تنبيه: تنبيهات الأصوات مختلفة لكل حدث'}
     </div>
   </div>
   
   <div style="margin-top:12px;background:var(--bg);border-radius:var(--r);padding:14px;border:1px solid var(--bd)">
-    <strong style="font-size:.9rem;display:block;margin-bottom:10px">⌨️ لوحة المفاتيح</strong>
+    <strong style="font-size:.9rem;display:block;margin-bottom:10px">${l==='fr'?'⌨️ Clavier virtuel':'⌨️ لوحة المفاتيح'}</strong>
     <div class="tog-wrap">
       <div>
-        <label style="font-weight:700">تفعيل الكيبورد تلقائياً</label>
-        <div style="font-size:.75rem;color:var(--mu);margin-top:2px">عند الضغط على أي حقل نصي يفتح الكيبورد تلقائياً</div>
+        <label style="font-weight:700">${l==='fr'?'Activer le clavier automatiquement':'تفعيل الكيبورد تلقائياً'}</label>
+        <div style="font-size:.75rem;color:var(--mu);margin-top:2px">${l==='fr'?'Souvre automatiquement en cliquant sur un champ':'عند الضغط على أي حقل نصي يفتح الكيبورد تلقائياً'}</div>
       </div>
       <label class="toggle"><input type="checkbox" ${s.autoVKB?'checked':''} onchange="s_set('autoVKB',this.checked);updateAutoVKB()"><span class="tog-sl"></span></label>
     </div>
@@ -3255,18 +3350,18 @@ function stgTab(tab,btn){
   <div class="form-group">
     <label>${t('lbl_store_name')}</label>
     <input type="text" id="stg-sname" value="${s.storeName}" oninput="s_set('storeName',this.value);updateStoreName()">
-    <div style="margin-top:6px;font-size:.75rem;color:var(--mu)">يظهر في أعلى الواجهة</div>
+    <div style="margin-top:6px;font-size:.75rem;color:var(--mu)">${l==='fr'?'Apparait en haut':'يظهر في أعلى الواجهة'}</div>
   </div>
   <div class="form-group">
     <label>${t('lbl_store_phone')}</label>
     <input type="tel" id="stg-phone" value="${s.phone||''}">
     <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
       <label class="toggle"><input type="checkbox" ${s.phoneVisible!==false?'checked':''} onchange="s_set('phoneVisible',this.checked);updateStoreName()"><span class="tog-sl"></span></label>
-      <span style="font-size:.8rem;color:var(--mu)">إظهار رقم الهاتف في الواجهة</span>
+      <span style="font-size:.8rem;color:var(--mu)">${l==='fr'?'Afficher le tel':'إظهار رقم الهاتف في الواجهة'}</span>
     </div>
   </div>
   <div style="background:var(--bg);border-radius:var(--rs);padding:12px;margin-bottom:14px;border:1px solid var(--bd)">
-    <strong style="font-size:.82rem;color:var(--mu)">معاينة الواجهة</strong>
+    <strong style="font-size:.82rem;color:var(--mu)">${l==='fr'?'Apercu de interface':'معاينة الواجهة'}</strong>
     <div style="margin-top:8px;text-align:center">
       <div id="store-preview-name" style="font-size:1.1rem;font-weight:800;color:var(--tx)">${s.storeName||'اسم المتجر'}</div>
       ${s.phoneVisible!==false&&s.phone?`<div style="font-size:.8rem;color:var(--pr);margin-top:2px">📞 ${s.phone}</div>`:''}
@@ -3278,29 +3373,29 @@ function stgTab(tab,btn){
     c.innerHTML=`
 <div style="max-width:580px">
   <div style="background:var(--bg);border-radius:var(--r);padding:14px;border:1px solid var(--bd);margin-bottom:14px">
-    <strong style="font-size:.9rem;display:block;margin-bottom:10px">🔔 قسم الشعارات</strong>
+    <strong style="font-size:.9rem;display:block;margin-bottom:10px">${l==='fr'?'🔔 Notifications':'🔔 قسم الشعارات'}</strong>
     <div class="tog-wrap">
-      <div><label style="font-weight:700">إشعار نهاية المخزون</label><div style="font-size:.72rem;color:var(--mu)">كل 24 ساعة</div></div>
+      <div><label style="font-weight:700">${l==='fr'?'Notification fin de stock':'إشعار نهاية المخزون'}</label><div style="font-size:.72rem;color:var(--mu)">${l==='fr'?'Toutes les 24 heures':'كل 24 ساعة'}</div></div>
       <label class="toggle"><input type="checkbox" ${s.notifStock!==false?'checked':''} onchange="s_set('notifStock',this.checked)"><span class="tog-sl"></span></label>
     </div>
     <div class="tog-wrap">
-      <div><label style="font-weight:700">إشعار دخول المستخدم</label><div style="font-size:.72rem;color:var(--mu)">آني - بالتوقيت والتاريخ</div></div>
+      <div><label style="font-weight:700">${l==='fr'?'Notification connexion utilisateur':'إشعار دخول المستخدم'}</label><div style="font-size:.72rem;color:var(--mu)">${l==='fr'?'Instantanée - avec heure et date':'آني - بالتوقيت والتاريخ'}</div></div>
       <label class="toggle"><input type="checkbox" ${s.notifLogin!==false?'checked':''} onchange="s_set('notifLogin',this.checked)"><span class="tog-sl"></span></label>
     </div>
     <div class="tog-wrap">
-      <div><label style="font-weight:700">إشعار التوصيل</label><div style="font-size:.72rem;color:var(--mu)">كل 48 ساعة ويتجدد كل 24 ساعة</div></div>
+      <div><label style="font-weight:700">${l==='fr'?'Notification livraison':'إشعار التوصيل'}</label><div style="font-size:.72rem;color:var(--mu)">${l==='fr'?'Toutes les 48h, renouvelée toutes les 24h':'كل 48 ساعة ويتجدد كل 24 ساعة'}</div></div>
       <label class="toggle"><input type="checkbox" ${s.notifDelivery!==false?'checked':''} onchange="s_set('notifDelivery',this.checked)"><span class="tog-sl"></span></label>
     </div>
     <div class="tog-wrap">
-      <div><label style="font-weight:700">إشعار الديون</label><div style="font-size:.72rem;color:var(--mu)">كل 48 ساعة ويتجدد كل 24 ساعة</div></div>
+      <div><label style="font-weight:700">${l==='fr'?'Notification dettes':'إشعار الديون'}</label><div style="font-size:.72rem;color:var(--mu)">${l==='fr'?'Toutes les 48h, renouvelée toutes les 24h':'كل 48 ساعة ويتجدد كل 24 ساعة'}</div></div>
       <label class="toggle"><input type="checkbox" ${s.notifDebt!==false?'checked':''} onchange="s_set('notifDebt',this.checked)"><span class="tog-sl"></span></label>
     </div>
     <div class="tog-wrap">
-      <div><label style="font-weight:700">إشعار الديون الخارجية</label><div style="font-size:.72rem;color:var(--mu)">كل أسبوع ويتجدد تلقائياً</div></div>
+      <div><label style="font-weight:700">${l==='fr'?'Notification dettes externes':'إشعار الديون الخارجية'}</label><div style="font-size:.72rem;color:var(--mu)">${l==='fr'?'Chaque semaine, renouvelée automatiquement':'كل أسبوع ويتجدد تلقائياً'}</div></div>
       <label class="toggle"><input type="checkbox" ${s.notifExtDebt!==false?'checked':''} onchange="s_set('notifExtDebt',this.checked)"><span class="tog-sl"></span></label>
     </div>
     <div style="margin-top:8px;padding:8px;background:rgba(0,212,255,.06);border-radius:var(--rs);font-size:.75rem;color:var(--in)">
-      ℹ️ جميع الإشعارات مدعومة بتنبيهات صوتية مختلفة
+      ${l==='fr'?'ℹ️ Toutes les notifications sont accompagnées de sons':'ℹ️ جميع الإشعارات مدعومة بتنبيهات صوتية مختلفة'}
     </div>
   </div>
   <button class="btn btn-pr" onclick="saveSettings();checkNotifs()">💾 ${t('btn_save')}</button>
@@ -3336,18 +3431,18 @@ function stgTab(tab,btn){
       <div class="about-floating-orb" style="width:50px;height:50px;bottom:0;left:10px;animation-duration:6s;animation-delay:1s;background:radial-gradient(circle,var(--ac),transparent)"></div>
       <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(108,99,255,.2);border:1px solid rgba(108,99,255,.3);border-radius:99px;padding:5px 16px;margin-bottom:14px">
         <span style="width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok);display:inline-block;animation:pulse 1.5s infinite"></span>
-        <span style="color:rgba(255,255,255,.8);font-size:.75rem;font-weight:700">مفعّل ومتصل</span>
+        <span style="color:rgba(255,255,255,.8);font-size:.75rem;font-weight:700">${l==='fr'?'Actif et connecté':'مفعّل ومتصل'}</span>
       </div>
-      <h1 class="about-glow-title">${State.settings.storeName||'متجري'}</h1>
+      <h1 class="about-glow-title">E-Commerce DZ</h1>
       <p class="about-glow-sub">${t('about_title')}</p>
       <div style="display:flex;justify-content:center;gap:14px;margin-top:16px;flex-wrap:wrap">
         <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px 20px;text-align:center">
           <div style="font-size:1.4rem;font-weight:900;color:#fff">${t('about_version').replace('الاصدار: ','').replace('Version: ','')}</div>
-          <div style="font-size:.68rem;color:rgba(255,255,255,.5);margin-top:3px">الإصدار الحالي</div>
+          <div style="font-size:.68rem;color:rgba(255,255,255,.5);margin-top:3px">${l==='fr'?'Version actuelle':'الإصدار الحالي'}</div>
         </div>
         <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px 20px;text-align:center">
           <div style="font-size:1.4rem;font-weight:900;color:#fff">2026</div>
-          <div style="font-size:.68rem;color:rgba(255,255,255,.5);margin-top:3px">سنة الإصدار</div>
+          <div style="font-size:.68rem;color:rgba(255,255,255,.5);margin-top:3px">${l==='fr'?'Année de sortie':'سنة الإصدار'}</div>
         </div>
       </div>
     </div>
@@ -3374,8 +3469,8 @@ function stgTab(tab,btn){
   
   <div style="text-align:center;padding:16px;background:linear-gradient(135deg,rgba(108,99,255,.06),rgba(0,212,255,.03));border:1px solid rgba(108,99,255,.12);border-radius:var(--r);margin-bottom:10px">
     <div style="font-size:1.8rem;margin-bottom:6px">🚀</div>
-    <p style="font-weight:700;font-size:.9rem;color:var(--tx)">نظام نقاط بيع ذكي ومتكامل</p>
-    <p style="font-size:.78rem;color:var(--mu);margin-top:4px">إدارة المبيعات • الديون • التوصيل • المخزون • الإحصائيات</p>
+    <p style="font-weight:700;font-size:.9rem;color:var(--tx)">${l==='fr'?'Système de point de vente intelligent':'نظام نقاط بيع ذكي ومتكامل'}</p>
+    <p style="font-size:.78rem;color:var(--mu);margin-top:4px">${l==='fr'?'Ventes • Dettes • Livraison • Stock • Statistiques':'إدارة المبيعات • الديون • التوصيل • المخزون • الإحصائيات'}</p>
   </div>
   
   <div style="text-align:center;font-size:.75rem;color:var(--mu);padding:10px">
@@ -3690,7 +3785,7 @@ const VKB_LAYOUTS={
     normal:[
       ['!','@','#','$','%','^','&','*','(',')','-'],
       ['+','=','[',']','{','}','|','\\',':',';','"'],
-      ["'",'<','>','?','/','~','`','،','؛','«','⌫'],
+      ["'",'<','>','?','/','~','\x60','،','؛','«','⌫'],
       ['مسافة','↵']
     ]
   }
@@ -3702,24 +3797,93 @@ function toggleVKB(){
   const tab=document.getElementById('vkb-tab');
   if(!vkb)return;
   if(vkbVisible){
-    // Show panel — bottom docked
     vkb.style.display='block';
-    vkb.style.left='0';
-    vkb.style.right='0';
-    vkb.style.bottom='0';
-    vkb.style.top='auto';
-    vkb.style.transform='none';
-    vkb.style.width='100%';
-    vkb.style.borderRadius='16px 16px 0 0';
-    vkb.classList.add('show');
+    // Reset to center-right if no position set
+    if(!vkb.dataset.positioned){
+      vkb.style.position='fixed';
+      vkb.style.left='auto';
+      vkb.style.right='8px';
+      vkb.style.top='';
+      vkb.style.transform='translateY(-50%)';
+      vkb.style.top='50%';
+      vkb.style.bottom='auto';
+    }
+    requestAnimationFrame(()=>vkb.classList.add('show'));
     if(tab){tab.style.display='none';}
     renderVKB();
+    initVKBDrag();
   } else {
     vkb.classList.remove('show');
-    vkb.style.bottom='-400px';
     if(tab){tab.style.display='block';}
-    setTimeout(()=>{if(!vkbVisible)vkb.style.display='none';},300);
+    setTimeout(()=>{if(!vkbVisible)vkb.style.display='none';},280);
   }
+}
+
+function initVKBDrag(){
+  const vkb=document.getElementById('vkb');
+  const handle=document.getElementById('vkb-drag-handle');
+  if(!vkb||!handle||handle._dragInited)return;
+  handle._dragInited=true;
+  let startX,startY,startLeft,startTop,isDragging=false;
+  function getVKBRect(){
+    const r=vkb.getBoundingClientRect();
+    return {left:r.left,top:r.top};
+  }
+  function startDrag(cx,cy){
+    isDragging=true;
+    const r=getVKBRect();
+    // Convert to absolute positioning
+    vkb.style.transform='none';
+    vkb.style.right='auto';
+    vkb.style.bottom='auto';
+    vkb.style.left=r.left+'px';
+    vkb.style.top=r.top+'px';
+    vkb.dataset.positioned='1';
+    startX=cx;startY=cy;
+    startLeft=r.left;startTop=r.top;
+    vkb.classList.add('dragging');
+    handle.style.cursor='grabbing';
+  }
+  function moveDrag(cx,cy){
+    if(!isDragging)return;
+    const dx=cx-startX,dy=cy-startY;
+    let nl=startLeft+dx,nt=startTop+dy;
+    // Clamp to viewport
+    const maxL=window.innerWidth-vkb.offsetWidth-4;
+    const maxT=window.innerHeight-vkb.offsetHeight-4;
+    nl=Math.max(4,Math.min(nl,maxL));
+    nt=Math.max(4,Math.min(nt,maxT));
+    vkb.style.left=nl+'px';
+    vkb.style.top=nt+'px';
+  }
+  function endDrag(){
+    isDragging=false;
+    vkb.classList.remove('dragging');
+    handle.style.cursor='grab';
+  }
+  // Touch
+  handle.addEventListener('touchstart',e=>{
+    const t=e.touches[0];
+    startDrag(t.clientX,t.clientY);
+    e.preventDefault();
+  },{passive:false});
+  document.addEventListener('touchmove',e=>{
+    if(!isDragging)return;
+    const t=e.touches[0];
+    moveDrag(t.clientX,t.clientY);
+    e.preventDefault();
+  },{passive:false});
+  document.addEventListener('touchend',()=>endDrag());
+  // Mouse
+  handle.addEventListener('mousedown',e=>{
+    startDrag(e.clientX,e.clientY);
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove',e=>{
+    if(!isDragging)return;
+    moveDrag(e.clientX,e.clientY);
+  });
+  document.addEventListener('mouseup',()=>endDrag());
 }
 
 function setVKBLang(lang){
