@@ -524,18 +524,18 @@ button,input,select,textarea{font-family:var(--fn)}
 
 /* Main VKB panel — draggable floating */
 .vkb{
-  position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:400;
+  position:fixed;right:8px;top:50%;transform:translateY(-50%);z-index:400;
   background:linear-gradient(160deg,#1e1e3a 0%,#12122a 100%);
   border:1.5px solid rgba(108,99,255,.5);
-  border-radius:14px;padding:8px 6px 10px;
+  border-radius:16px;padding:10px 8px 12px;
   box-shadow:0 8px 40px rgba(0,0,0,.7),0 0 0 1px rgba(108,99,255,.15);
   display:none;
-  width:min(320px,92vw);max-height:92vh;overflow-y:auto;
+  width:min(360px,96vw);
   user-select:none;
-  transition:opacity .25s ease,transform .25s ease;
+  transition:opacity .25s ease;
   opacity:0;pointer-events:none;
 }
-.vkb.show{opacity:1;pointer-events:all;display:block}
+.vkb.show{opacity:1;pointer-events:all}
 .vkb.dragging{transition:none;cursor:grabbing;}
 .vkb-hdr{
   display:flex;justify-content:space-between;align-items:center;
@@ -543,24 +543,25 @@ button,input,select,textarea{font-family:var(--fn)}
   border-bottom:1px solid rgba(255,255,255,.08);
 }
 .vkb-drag-handle{
-  display:flex;flex-direction:row;gap:3px;padding:6px 4px;opacity:.5;cursor:grab;
-  align-items:center;
+  display:flex;flex-direction:row;gap:3px;padding:6px 14px;opacity:.8;cursor:grab;
+  align-items:center;touch-action:none;
 }
-.vkb-drag-handle span{display:block;width:4px;height:4px;background:rgba(255,255,255,.7);border-radius:50%}
+.vkb-drag-handle:hover{opacity:1}
 .vkb-title{font-size:.68rem;font-weight:700;color:rgba(255,255,255,.4);pointer-events:none;flex:1;text-align:center}
 .vkb-row{
-  display:flex;gap:4px;margin-bottom:4px;justify-content:center;
+  display:flex;gap:3px;margin-bottom:3px;justify-content:center;
+  flex-wrap:nowrap;
 }
 .vkb-key{
-  height:40px;min-width:28px;flex:1;
-  border:1px solid rgba(255,255,255,.1);border-radius:8px;
+  height:38px;min-width:0;flex:1;
+  border:1px solid rgba(255,255,255,.1);border-radius:7px;
   background:rgba(255,255,255,.12);color:#e8e8f0;
-  font-size:.88rem;font-weight:600;cursor:pointer;
+  font-size:.78rem;font-weight:600;cursor:pointer;
   transition:background .07s,transform .07s;
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 3px 0 rgba(0,0,0,.5);
   -webkit-tap-highlight-color:transparent;touch-action:manipulation;
-  max-width:none;
+  padding:0 2px;overflow:hidden;
 }
 .vkb-key:hover{background:rgba(255,255,255,.22)}
 .vkb-key:active,.vkb-key.pressed{
@@ -1348,13 +1349,13 @@ select option{background:var(--card);color:var(--tx)}
       <button class="vkb-lang-btn" id="vkb-lang-num" onclick="setVKBLang('num')">123</button>
       <button class="vkb-lang-btn" id="vkb-lang-sym" onclick="setVKBLang('sym')">!@#</button>
     </div>
-    <div class="vkb-drag-handle" id="vkb-drag-handle" style="display:flex;flex-direction:row;gap:3px;align-items:center;padding:4px 8px;cursor:grab;touch-action:none" title="اسحب لتحريك لوحة المفاتيح">
-      <span style="display:block;width:4px;height:4px;background:rgba(255,255,255,.5);border-radius:50%"></span>
-      <span style="display:block;width:4px;height:4px;background:rgba(255,255,255,.5);border-radius:50%"></span>
-      <span style="display:block;width:4px;height:4px;background:rgba(255,255,255,.5);border-radius:50%"></span>
-      <span style="display:block;width:4px;height:4px;background:rgba(255,255,255,.5);border-radius:50%"></span>
-      <span style="display:block;width:4px;height:4px;background:rgba(255,255,255,.5);border-radius:50%"></span>
-      <span style="display:block;width:4px;height:4px;background:rgba(255,255,255,.5);border-radius:50%"></span>
+    <div class="vkb-drag-handle" id="vkb-drag-handle" style="display:flex;flex-direction:row;gap:3px;align-items:center;padding:6px 14px;cursor:grab;touch-action:none;background:rgba(108,99,255,.15);border-radius:8px;min-width:50px;justify-content:center;" title="✋ اسحب لتحريك">
+      <span style="display:block;width:5px;height:5px;background:rgba(255,255,255,.6);border-radius:50%"></span>
+      <span style="display:block;width:5px;height:5px;background:rgba(255,255,255,.6);border-radius:50%"></span>
+      <span style="display:block;width:5px;height:5px;background:rgba(255,255,255,.6);border-radius:50%"></span>
+      <span style="display:block;width:5px;height:5px;background:rgba(255,255,255,.6);border-radius:50%"></span>
+      <span style="display:block;width:5px;height:5px;background:rgba(255,255,255,.6);border-radius:50%"></span>
+      <span style="display:block;width:5px;height:5px;background:rgba(255,255,255,.6);border-radius:50%"></span>
     </div>
     <button onclick="toggleVKB()" style="background:rgba(255,71,87,.18);border:1px solid rgba(255,71,87,.3);border-radius:8px;cursor:pointer;color:#ff9aa2;font-size:.82rem;padding:4px 10px;font-weight:700;line-height:1.4">✕ إخفاء</button>
   </div>
@@ -3797,25 +3798,26 @@ function toggleVKB(){
   const tab=document.getElementById('vkb-tab');
   if(!vkb)return;
   if(vkbVisible){
-    vkb.style.display='block';
-    // Reset to center-right if no position set
+    // Set position before showing
     if(!vkb.dataset.positioned){
       vkb.style.position='fixed';
-      vkb.style.left='auto';
       vkb.style.right='8px';
-      vkb.style.top='';
-      vkb.style.transform='translateY(-50%)';
-      vkb.style.top='50%';
+      vkb.style.left='auto';
       vkb.style.bottom='auto';
+      vkb.style.top='50%';
+      vkb.style.transform='translateY(-50%)';
     }
-    requestAnimationFrame(()=>vkb.classList.add('show'));
-    if(tab){tab.style.display='none';}
+    vkb.style.display='block';
+    // Force reflow then animate in
+    void vkb.offsetWidth;
+    vkb.classList.add('show');
+    if(tab) tab.style.display='none';
     renderVKB();
     initVKBDrag();
   } else {
     vkb.classList.remove('show');
-    if(tab){tab.style.display='block';}
-    setTimeout(()=>{if(!vkbVisible)vkb.style.display='none';},280);
+    if(tab) tab.style.display='block';
+    setTimeout(()=>{ if(!vkbVisible) vkb.style.display='none'; }, 280);
   }
 }
 
@@ -3824,66 +3826,73 @@ function initVKBDrag(){
   const handle=document.getElementById('vkb-drag-handle');
   if(!vkb||!handle||handle._dragInited)return;
   handle._dragInited=true;
-  let startX,startY,startLeft,startTop,isDragging=false;
-  function getVKBRect(){
-    const r=vkb.getBoundingClientRect();
-    return {left:r.left,top:r.top};
-  }
-  function startDrag(cx,cy){
+
+  let isDragging=false;
+  let startCX=0,startCY=0,startLeft=0,startTop=0;
+
+  function beginDrag(cx,cy){
     isDragging=true;
-    const r=getVKBRect();
-    // Convert to absolute positioning
+    // Capture current rendered position
+    const r=vkb.getBoundingClientRect();
+    // Switch from transform-based centering to absolute left/top
     vkb.style.transform='none';
     vkb.style.right='auto';
     vkb.style.bottom='auto';
     vkb.style.left=r.left+'px';
     vkb.style.top=r.top+'px';
     vkb.dataset.positioned='1';
-    startX=cx;startY=cy;
-    startLeft=r.left;startTop=r.top;
+    startCX=cx; startCY=cy;
+    startLeft=r.left; startTop=r.top;
     vkb.classList.add('dragging');
     handle.style.cursor='grabbing';
   }
-  function moveDrag(cx,cy){
+
+  function doMove(cx,cy){
     if(!isDragging)return;
-    const dx=cx-startX,dy=cy-startY;
-    let nl=startLeft+dx,nt=startTop+dy;
-    // Clamp to viewport
-    const maxL=window.innerWidth-vkb.offsetWidth-4;
-    const maxT=window.innerHeight-vkb.offsetHeight-4;
-    nl=Math.max(4,Math.min(nl,maxL));
-    nt=Math.max(4,Math.min(nt,maxT));
+    let nl=startLeft+(cx-startCX);
+    let nt=startTop+(cy-startCY);
+    // Keep inside viewport
+    nl=Math.max(0,Math.min(nl,window.innerWidth-vkb.offsetWidth));
+    nt=Math.max(0,Math.min(nt,window.innerHeight-vkb.offsetHeight));
     vkb.style.left=nl+'px';
     vkb.style.top=nt+'px';
   }
+
   function endDrag(){
     isDragging=false;
     vkb.classList.remove('dragging');
     handle.style.cursor='grab';
   }
-  // Touch
-  handle.addEventListener('touchstart',e=>{
-    const t=e.touches[0];
-    startDrag(t.clientX,t.clientY);
+
+  // ---- Touch events on handle ----
+  handle.addEventListener('touchstart',function(e){
+    if(e.touches.length!==1)return;
+    beginDrag(e.touches[0].clientX,e.touches[0].clientY);
     e.preventDefault();
-  },{passive:false});
-  document.addEventListener('touchmove',e=>{
+    e.stopPropagation();
+  },{passive:false,capture:true});
+
+  handle.addEventListener('touchmove',function(e){
     if(!isDragging)return;
-    const t=e.touches[0];
-    moveDrag(t.clientX,t.clientY);
+    doMove(e.touches[0].clientX,e.touches[0].clientY);
     e.preventDefault();
-  },{passive:false});
-  document.addEventListener('touchend',()=>endDrag());
-  // Mouse
-  handle.addEventListener('mousedown',e=>{
-    startDrag(e.clientX,e.clientY);
+    e.stopPropagation();
+  },{passive:false,capture:true});
+
+  handle.addEventListener('touchend',endDrag,{passive:true});
+  handle.addEventListener('touchcancel',endDrag,{passive:true});
+
+  // ---- Mouse events ----
+  handle.addEventListener('mousedown',function(e){
+    beginDrag(e.clientX,e.clientY);
     e.preventDefault();
   });
-  document.addEventListener('mousemove',e=>{
-    if(!isDragging)return;
-    moveDrag(e.clientX,e.clientY);
+
+  document.addEventListener('mousemove',function(e){
+    doMove(e.clientX,e.clientY);
   });
-  document.addEventListener('mouseup',()=>endDrag());
+
+  document.addEventListener('mouseup',endDrag);
 }
 
 function setVKBLang(lang){
