@@ -503,81 +503,102 @@ button,input,select,textarea{font-family:var(--fn)}
 .color-swatch.active{border-color:var(--tx);transform:scale(1.15)}
 
 /* ============================================================
-   VIRTUAL KEYBOARD — Bottom Docked Real Keyboard Style
+   VIRTUAL KEYBOARD — Draggable Floating
    ============================================================ */
-/* VKB Tab — thin strip on right edge */
+
+/* The small side indicator - barely visible vertical line */
 .vkb-tab{
-  position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:401;
+  position:fixed;top:50%;right:0;transform:translateY(-50%);z-index:401;
+  width:6px;height:60px;
   background:linear-gradient(180deg,var(--pr),var(--ac));
-  color:#fff;border-radius:6px 0 0 6px;
-  width:8px;height:60px;cursor:pointer;
-  box-shadow:-2px 0 10px rgba(108,99,255,.5);
+  border-radius:4px 0 0 4px;
+  cursor:pointer;
   display:none;user-select:none;
-  transition:width .2s ease,box-shadow .15s,opacity .2s;
-  opacity:.7;overflow:hidden;
+  opacity:0.55;
+  transition:opacity .2s,width .2s;
+  box-shadow:-2px 0 8px rgba(108,99,255,.5);
+  touch-action:none;
 }
-.vkb-tab:hover{
-  width:22px;opacity:1;
-  box-shadow:-4px 0 18px rgba(108,99,255,.8);
-}
+.vkb-tab:hover{opacity:1;width:10px}
 .vkb-tab span{display:none}
 
 /* Main VKB panel — draggable floating */
 .vkb{
-  position:fixed;right:8px;top:50%;transform:translateY(-50%);z-index:400;
-  background:linear-gradient(160deg,#1e1e3a 0%,#12122a 100%);
-  border:1.5px solid rgba(108,99,255,.5);
-  border-radius:16px;padding:10px 8px 12px;
-  box-shadow:0 8px 40px rgba(0,0,0,.7),0 0 0 1px rgba(108,99,255,.15);
+  position:fixed;z-index:400;
+  background:rgba(22,22,38,.97);
+  border:1px solid rgba(108,99,255,.35);
+  border-radius:14px;
+  padding:8px 6px 10px;
+  box-shadow:0 8px 40px rgba(0,0,0,.75),0 0 0 1px rgba(108,99,255,.12);
   display:none;
-  width:min(360px,96vw);
+  width:min(380px,96vw);
   user-select:none;
-  transition:opacity .25s ease;
-  opacity:0;pointer-events:none;
+  touch-action:none;
+  backdrop-filter:blur(20px);
 }
-.vkb.show{opacity:1;pointer-events:all}
-.vkb.dragging{transition:none;cursor:grabbing;}
+.vkb.show{display:block}
+.vkb.dragging{transition:none;box-shadow:0 16px 60px rgba(0,0,0,.9)}
 .vkb-hdr{
   display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:6px;padding:0 4px 5px;
-  border-bottom:1px solid rgba(255,255,255,.08);
+  margin-bottom:7px;padding:0 2px 6px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  cursor:grab;
 }
+.vkb-hdr:active{cursor:grabbing}
 .vkb-drag-handle{
-  display:flex;flex-direction:row;gap:3px;padding:6px 14px;opacity:.8;cursor:grab;
-  align-items:center;touch-action:none;
+  display:flex;flex-direction:row;gap:3px;padding:4px 6px;opacity:.4;
+  align-items:center;
 }
-.vkb-drag-handle:hover{opacity:1}
+.vkb-drag-handle span{width:18px;height:2px;background:rgba(255,255,255,.5);border-radius:2px;display:block;margin:2px 0}
 .vkb-title{font-size:.68rem;font-weight:700;color:rgba(255,255,255,.4);pointer-events:none;flex:1;text-align:center}
 .vkb-row{
-  display:flex;gap:3px;margin-bottom:3px;justify-content:center;
-  flex-wrap:nowrap;
+  display:flex;gap:3px;margin-bottom:4px;justify-content:center;
+  padding:0 2px;
 }
 .vkb-key{
-  height:38px;min-width:0;flex:1;
-  border:1px solid rgba(255,255,255,.1);border-radius:7px;
-  background:rgba(255,255,255,.12);color:#e8e8f0;
-  font-size:.78rem;font-weight:600;cursor:pointer;
-  transition:background .07s,transform .07s;
+  height:38px;min-width:26px;flex:1;
+  border:1px solid rgba(255,255,255,.12);
+  border-bottom:3px solid rgba(0,0,0,.45);
+  border-radius:7px;
+  background:linear-gradient(180deg,rgba(68,68,100,.95),rgba(48,48,75,.95));
+  color:#dde0f0;
+  font-size:.84rem;font-weight:600;cursor:pointer;
+  transition:background .06s,transform .06s,border-bottom .06s;
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 3px 0 rgba(0,0,0,.5);
   -webkit-tap-highlight-color:transparent;touch-action:manipulation;
-  padding:0 2px;overflow:hidden;
+  max-width:none;letter-spacing:-.01em;
 }
-.vkb-key:hover{background:rgba(255,255,255,.22)}
+.vkb-key:hover{background:linear-gradient(180deg,rgba(90,90,130,.95),rgba(65,65,100,.95));color:#fff}
 .vkb-key:active,.vkb-key.pressed{
-  background:rgba(108,99,255,.7);transform:translateY(2px);box-shadow:none;color:#fff;
+  background:linear-gradient(180deg,rgba(108,99,255,.8),rgba(80,72,200,.8));
+  transform:translateY(2px);border-bottom:1px solid rgba(0,0,0,.4);color:#fff;
 }
-.vkb-key.wide{flex:1.8}
-.vkb-key.wider{flex:2.8}
-.vkb-key.widest{flex:6}
-.vkb-key.special{background:rgba(80,80,120,.7);color:#a78bfa;border-color:rgba(108,99,255,.35);font-size:.75rem}
-.vkb-key.special:hover{background:rgba(108,99,255,.45)}
-.vkb-key.special.pressed-shift{background:rgba(108,99,255,.8);color:#fff}
-.vkb-key.danger{background:rgba(100,30,40,.8);color:#ff9aa2;border-color:rgba(255,71,87,.3);font-size:1rem}
-.vkb-key.danger:hover{background:rgba(255,71,87,.4)}
-.vkb-key.action{background:rgba(0,100,80,.7);color:#00e6b8;border-color:rgba(0,200,150,.3);font-size:1rem}
-.vkb-key.action:hover{background:rgba(0,200,150,.4)}
-.vkb-key.num-key{background:rgba(255,255,255,.07);color:#b0b8d0;font-size:.72rem}
+.vkb-key.wide{flex:1.7}
+.vkb-key.wider{flex:2.5}
+.vkb-key.widest{flex:5.5}
+.vkb-key.special{
+  background:linear-gradient(180deg,rgba(45,45,70,.95),rgba(30,30,55,.95));
+  color:#8b88d0;border-color:rgba(108,99,255,.25);font-size:.72rem;font-weight:700;
+  border-bottom-color:rgba(0,0,0,.5);
+}
+.vkb-key.special:hover{background:linear-gradient(180deg,rgba(70,65,130,.95),rgba(50,45,105,.95));color:#a78bfa}
+.vkb-key.special.pressed-shift{background:linear-gradient(180deg,rgba(108,99,255,.9),rgba(80,72,200,.9));color:#fff}
+.vkb-key.danger{
+  background:linear-gradient(180deg,rgba(90,25,35,.95),rgba(65,18,25,.95));
+  color:#ff8599;border-color:rgba(255,71,87,.2);font-size:1rem;
+  border-bottom-color:rgba(0,0,0,.5);
+}
+.vkb-key.danger:hover{background:linear-gradient(180deg,rgba(140,35,50,.95),rgba(100,25,38,.95))}
+.vkb-key.action{
+  background:linear-gradient(180deg,rgba(0,90,70,.95),rgba(0,65,50,.95));
+  color:#00d4a0;border-color:rgba(0,200,150,.2);font-size:1rem;
+  border-bottom-color:rgba(0,0,0,.5);
+}
+.vkb-key.action:hover{background:linear-gradient(180deg,rgba(0,140,100,.95),rgba(0,100,75,.95))}
+.vkb-key.num-key{
+  background:linear-gradient(180deg,rgba(35,35,60,.95),rgba(25,25,45,.95));
+  color:#9090b8;font-size:.75rem;
+}
 .vkb-lang-sel{display:flex;gap:4px}
 .vkb-lang-btn{
   padding:4px 10px;border:1px solid rgba(255,255,255,.15);border-radius:99px;
@@ -1335,29 +1356,37 @@ select option{background:var(--card);color:var(--tx)}
   </div>
 </div>
 
-<!-- VKB Side Tab (shown when keyboard is hidden) -->
-<div class="vkb-tab" id="vkb-tab" onclick="toggleVKB()">
-  <span>⌨️</span>
+<!-- VKB Side Indicator (thin bar, barely visible) -->
+<div class="vkb-tab" id="vkb-tab" onclick="toggleVKB()" title="فتح لوحة المفاتيح">
+  <span></span>
 </div>
 
 <!-- VIRTUAL KEYBOARD — Bottom Docked Panel -->
 <div class="vkb" id="vkb">
   <div class="vkb-hdr" id="vkb-hdr">
-    <div class="vkb-lang-sel">
+    <!-- Drag indicator - 3 lines -->
+    <div class="vkb-drag-handle" style="display:flex;flex-direction:column;gap:3px;padding:4px 8px;cursor:grab;opacity:.5">
+      <span></span><span></span><span></span>
+    </div>
+    <!-- Language tabs -->
+    <div class="vkb-lang-sel" style="display:flex;gap:3px">
       <button class="vkb-lang-btn active" id="vkb-lang-ar" onclick="setVKBLang('ar')">عربي</button>
       <button class="vkb-lang-btn" id="vkb-lang-fr" onclick="setVKBLang('fr')">FR</button>
       <button class="vkb-lang-btn" id="vkb-lang-num" onclick="setVKBLang('num')">123</button>
       <button class="vkb-lang-btn" id="vkb-lang-sym" onclick="setVKBLang('sym')">!@#</button>
     </div>
-    <div class="vkb-drag-handle" id="vkb-drag-handle" style="display:flex;flex-direction:row;gap:3px;align-items:center;padding:6px 14px;cursor:grab;touch-action:none;background:rgba(108,99,255,.15);border-radius:8px;min-width:50px;justify-content:center;" title="✋ اسحب لتحريك">
-      <span style="display:block;width:5px;height:5px;background:rgba(255,255,255,.6);border-radius:50%"></span>
-      <span style="display:block;width:5px;height:5px;background:rgba(255,255,255,.6);border-radius:50%"></span>
-      <span style="display:block;width:5px;height:5px;background:rgba(255,255,255,.6);border-radius:50%"></span>
-      <span style="display:block;width:5px;height:5px;background:rgba(255,255,255,.6);border-radius:50%"></span>
-      <span style="display:block;width:5px;height:5px;background:rgba(255,255,255,.6);border-radius:50%"></span>
-      <span style="display:block;width:5px;height:5px;background:rgba(255,255,255,.6);border-radius:50%"></span>
+    <!-- Dots indicator -->
+    <div style="display:flex;gap:3px;align-items:center;padding:0 4px;opacity:.35;pointer-events:none">
+      <span style="width:5px;height:5px;border-radius:50%;background:#fff;display:block"></span>
+      <span style="width:5px;height:5px;border-radius:50%;background:#fff;display:block"></span>
+      <span style="width:5px;height:5px;border-radius:50%;background:#fff;display:block"></span>
+      <span style="width:5px;height:5px;border-radius:50%;background:#fff;display:block"></span>
+      <span style="width:5px;height:5px;border-radius:50%;background:#fff;display:block"></span>
+      <span style="width:5px;height:5px;border-radius:50%;background:#fff;display:block"></span>
+      <span style="width:5px;height:5px;border-radius:50%;background:#fff;display:block"></span>
     </div>
-    <button onclick="toggleVKB()" style="background:rgba(255,71,87,.18);border:1px solid rgba(255,71,87,.3);border-radius:8px;cursor:pointer;color:#ff9aa2;font-size:.82rem;padding:4px 10px;font-weight:700;line-height:1.4">✕ إخفاء</button>
+    <!-- Close button -->
+    <button class="vkb-close" onclick="toggleVKB()" style="background:rgba(255,71,87,.2);border:1px solid rgba(255,71,87,.3);border-radius:8px;cursor:pointer;color:#ff9aa2;font-size:.8rem;padding:5px 10px;font-weight:800;line-height:1;flex-shrink:0">✕</button>
   </div>
   <div id="vkb-layout"></div>
 </div>
@@ -1445,7 +1474,7 @@ const T={
     btn_partial_clear:'مسح جزئي',btn_full_clear:'مسح كلي',
     about_title:'نظام نقاط البيع الذكي',about_version:'الاصدار: v4.7.0',about_year:'تاريخ الاصدار: 2026',
     about_license:'حالة الترخيص',about_active:'البرنامج مفعل',
-    about_dev:'المطور',about_company:'بوس ديزاد | ب.حمزة',about_contact:'واتساب: 0770044850',
+    about_dev:'المطور',about_company:'POS DZ | ب.حمزة',about_contact:'واتساب: 0770044850',
     about_rights:'2026 بوس ديزاد - جميع الحقوق محفوظة',
     partial_pay_prompt:'أدخل المبلغ المدفوع:',
     confirm_delete_prod:'هل تريد حذف هذا المنتج؟',
@@ -1524,7 +1553,7 @@ const T={
     btn_partial_clear:'Suppression partielle',btn_full_clear:'Suppression totale',
     about_title:'Système de point de vente intelligent',about_version:'Version: v4.7.0',about_year:'Date: 2026',
     about_license:'Statut de licence',about_active:'Programme activé',
-    about_dev:'Développeur',about_company:'Boss Dizad | B.Hamza',about_contact:'WhatsApp: 0770044850',
+    about_dev:'Développeur',about_company:'POS DZ | B.Hamza',about_contact:'WhatsApp: 0770044850',
     about_rights:'2026 Boss Dizad - Tous droits réservés',
     partial_pay_prompt:'Entrez le montant payé:',
     confirm_delete_prod:'Supprimer ce produit?',
@@ -2541,11 +2570,12 @@ function deleteDebt(id){
 }
 
 function renderDeliveryTable(){
+  const l=State.settings.lang||'ar';
   const wrap=document.getElementById('delivery-tbl-wrap');if(!wrap)return;
   if(!State.deliveries.length){wrap.innerHTML=`<div class="notif-box"><span style="color:var(--mu)">0</span></div>`;return;}
   wrap.innerHTML=`<div class="tbl-wrap"><table class="tbl">
 <thead><tr>
-  <th>${t('col_name')}</th><th>${t('col_phone')}</th><th>${t('col_address')}</th>
+  <th>${t('col_name')}</th><th>${t('col_phone')}</th><th>${t('col_type')}</th>
   <th>${t('col_company')}</th><th>${t('col_buy')}</th><th>${t('lbl_sell_total')}</th><th>${t('lbl_profit')}</th>
   <th>${t('col_date')}</th><th>${t('col_status')}</th><th>${t('col_actions')}</th>
 </tr></thead>
@@ -2555,7 +2585,7 @@ function renderDeliveryTable(){
   const profit=sellTotal-buyTotal;
   return `
 <tr>
-  <td><strong>${d.name}</strong></td><td>${d.phone}</td><td>${d.address}${d.wilaya?' - '+d.wilaya:''}</td>
+  <td><strong>${d.name}</strong></td><td>${d.phone}</td><td>${d.prodType||d.items?.map(i=>i.name).join(', ')||'-'}</td>
   <td>${d.company||'-'}</td>
   <td style="color:var(--er)">${buyTotal.toFixed(2)} ${State.settings.currency}</td>
   <td style="color:var(--pr)">${sellTotal.toFixed(2)} ${State.settings.currency}</td>
@@ -2564,6 +2594,7 @@ function renderDeliveryTable(){
   <td><span class="badge ${d.status==='paid'?'badge-ok':'badge-wa'}">${d.status==='paid'?t('btn_pay_full'):t('btn_deliver')}</span></td>
   <td style="display:flex;gap:4px;flex-wrap:wrap">
     ${d.status!=='paid'?`<button class="btn btn-sm btn-ok" onclick="payDelivery('${d.id}')">${t('btn_pay_full')}</button>`:''}
+    ${d.status!=='paid'?`<button class="btn btn-sm" style="background:rgba(255,140,0,.18);color:#ff8c00;border:1px solid rgba(255,140,0,.35)" onclick="cancelDelivery('${d.id}')">${l==='fr'?'Annuler':'إلغاء'}</button>`:''}
     <button class="btn btn-sm btn-pr" onclick="editDelivery('${d.id}')">${t('btn_edit')}</button>
     <button class="btn btn-sm btn-er" onclick="deleteDelivery('${d.id}')">${t('btn_delete')}</button>
   </td>
@@ -2585,10 +2616,40 @@ function payDelivery(id){
     date:now,customerName:d.name,items:d.items||[],user:State.currentUser?.name||'admin',
     sourceType:'delivery'
   };
-  State.sales.push(sale);State.todaySales.push(sale);
-  const todayStr=new Date().toDateString();
-  State.todaySales=State.todaySales.filter(s=>new Date(s.date).toDateString()===todayStr);
+  State.sales.push(sale);
+  const todayStr2=new Date().toDateString();
+  const dayClosedAt2=State.settings.dayClosedAt||null;
+  State.todaySales=State.sales.filter(s=>{
+    const sd=new Date(s.date);
+    if(sd.toDateString()!==todayStr2)return false;
+    if(dayClosedAt2&&sd<=new Date(dayClosedAt2))return false;
+    return true;
+  });
   saveState();renderDeliveryTable();toast(t('toast_saved'),'ok');Snd.save();
+}
+
+function cancelDelivery(id){
+  Snd.click();
+  const d=State.deliveries.find(x=>String(x.id)===String(id));if(!d)return;
+  const msg=State.settings.lang==='fr'
+    ?'Annuler la livraison et retourner les articles en stock?'
+    :'إلغاء التوصيل وإرجاع المنتجات للمخزون؟';
+  showConfirm(State.settings.lang==='fr'?'Annuler livraison':'إلغاء التوصيل',msg,()=>{
+    // Return items to inventory
+    if(d.items&&d.items.length){
+      d.items.forEach(item=>{
+        const p=State.products.find(x=>String(x.id)===String(item.id));
+        if(p){p.qty+=item.qty;}
+      });
+    }
+    // Remove delivery
+    State.deliveries=State.deliveries.filter(x=>String(x.id)!==String(id));
+    saveState();
+    renderDeliveryTable();
+    const msg2=State.settings.lang==='fr'?'Livraison annulée':'تم إلغاء التوصيل وإرجاع المنتجات';
+    toast(msg2,'wa');
+    Snd.ok();
+  });
 }
 
 function editDelivery(id){
@@ -2624,9 +2685,15 @@ function deleteDelivery(id){
    ================================================================ */
 function renderBusiness(){
   const body=document.getElementById('business-body');if(!body)return;
-  // Sync today sales
+  // Sync today sales — respect dayClosedAt timestamp
   const todayStr=new Date().toDateString();
-  State.todaySales=State.sales.filter(s=>new Date(s.date).toDateString()===todayStr);
+  const dayClosedAt=State.settings.dayClosedAt||null;
+  State.todaySales=State.sales.filter(s=>{
+    const sDate=new Date(s.date);
+    if(sDate.toDateString()!==todayStr)return false;
+    if(dayClosedAt&&sDate<=new Date(dayClosedAt))return false;
+    return true;
+  });
   
   const todaySales=State.todaySales;
   const rev=todaySales.filter(s=>s.sourceType!=='debt_ext').reduce((s,i)=>s+(i.total||0),0);
@@ -3020,9 +3087,16 @@ function cancelSale(id){
 
 function closeDay(){
   showConfirm(t('btn_close_day'),t('confirm_close_day'),()=>{
-    State.todaySales=[];State.invoiceCounter=1;
-    DB.s('today_sales',[]);DB.s('invoice_counter',1);
-    renderBusiness();toast(t('toast_saved'),'ok');Snd.ok();
+    // Set dayClosedAt to NOW — sales before this timestamp won't count as today's
+    State.settings.dayClosedAt=new Date().toISOString();
+    State.invoiceCounter=1;
+    State.todaySales=[];
+    DB.s('today_sales',[]);
+    DB.s('invoice_counter',1);
+    DB.s('settings',State.settings);
+    renderBusiness();
+    toast(t('btn_close_day'),'ok');
+    Snd.ok();
   });
 }
 
@@ -3798,101 +3872,86 @@ function toggleVKB(){
   const tab=document.getElementById('vkb-tab');
   if(!vkb)return;
   if(vkbVisible){
-    // Set position before showing
-    if(!vkb.dataset.positioned){
-      vkb.style.position='fixed';
-      vkb.style.right='8px';
-      vkb.style.left='auto';
-      vkb.style.bottom='auto';
-      vkb.style.top='50%';
-      vkb.style.transform='translateY(-50%)';
-    }
     vkb.style.display='block';
-    // Force reflow then animate in
-    void vkb.offsetWidth;
+    // Position in center-bottom if no saved position
+    if(!vkb.dataset.placed){
+      const vw=window.innerWidth;
+      const vh=window.innerHeight;
+      vkb.style.left=Math.max(0,(vw-Math.min(380,vw*0.96))/2)+'px';
+      vkb.style.top=Math.max(60,vh-300)+'px';
+      vkb.style.right='auto';
+      vkb.style.bottom='auto';
+      vkb.style.transform='none';
+      vkb.dataset.placed='1';
+    }
+    vkb.style.borderRadius='14px';
     vkb.classList.add('show');
-    if(tab) tab.style.display='none';
+    if(tab){tab.style.display='none';}
     renderVKB();
     initVKBDrag();
   } else {
     vkb.classList.remove('show');
-    if(tab) tab.style.display='block';
-    setTimeout(()=>{ if(!vkbVisible) vkb.style.display='none'; }, 280);
+    if(tab){tab.style.display='block';}
+    setTimeout(()=>{if(!vkbVisible){vkb.style.display='none';}},200);
   }
 }
 
 function initVKBDrag(){
   const vkb=document.getElementById('vkb');
-  const handle=document.getElementById('vkb-drag-handle');
-  if(!vkb||!handle||handle._dragInited)return;
-  handle._dragInited=true;
-
-  let isDragging=false;
-  let startCX=0,startCY=0,startLeft=0,startTop=0;
-
-  function beginDrag(cx,cy){
-    isDragging=true;
-    // Capture current rendered position
-    const r=vkb.getBoundingClientRect();
-    // Switch from transform-based centering to absolute left/top
-    vkb.style.transform='none';
-    vkb.style.right='auto';
-    vkb.style.bottom='auto';
-    vkb.style.left=r.left+'px';
-    vkb.style.top=r.top+'px';
-    vkb.dataset.positioned='1';
-    startCX=cx; startCY=cy;
-    startLeft=r.left; startTop=r.top;
+  const hdr=vkb?.querySelector('.vkb-hdr');
+  if(!hdr||vkb.dataset.dragInited)return;
+  vkb.dataset.dragInited='1';
+  let startX,startY,startL,startT,dragging=false;
+  function getPos(e){return e.touches?{x:e.touches[0].clientX,y:e.touches[0].clientY}:{x:e.clientX,y:e.clientY};}
+  function onStart(e){
+    if(e.target.closest('.vkb-key,.vkb-lang-btn,.vkb-close'))return;
+    const pos=getPos(e);
+    startX=pos.x;startY=pos.y;
+    startL=parseInt(vkb.style.left)||0;
+    startT=parseInt(vkb.style.top)||0;
+    dragging=true;
     vkb.classList.add('dragging');
-    handle.style.cursor='grabbing';
+    e.preventDefault();
   }
-
-  function doMove(cx,cy){
-    if(!isDragging)return;
-    let nl=startLeft+(cx-startCX);
-    let nt=startTop+(cy-startCY);
-    // Keep inside viewport
-    nl=Math.max(0,Math.min(nl,window.innerWidth-vkb.offsetWidth));
-    nt=Math.max(0,Math.min(nt,window.innerHeight-vkb.offsetHeight));
-    vkb.style.left=nl+'px';
-    vkb.style.top=nt+'px';
+  function onMove(e){
+    if(!dragging)return;
+    const pos=getPos(e);
+    const dx=pos.x-startX;const dy=pos.y-startY;
+    const vw=window.innerWidth;const vh=window.innerHeight;
+    const w=vkb.offsetWidth;const h=vkb.offsetHeight;
+    const newL=Math.max(0,Math.min(vw-w,startL+dx));
+    const newT=Math.max(0,Math.min(vh-h,startT+dy));
+    vkb.style.left=newL+'px';vkb.style.top=newT+'px';
+    vkb.style.right='auto';vkb.style.bottom='auto';
+    e.preventDefault();
   }
-
-  function endDrag(){
-    isDragging=false;
+  function onEnd(){
+    if(!dragging)return;
+    dragging=false;
     vkb.classList.remove('dragging');
-    handle.style.cursor='grab';
+    // Snap side tab to nearest vertical edge
+    const tab=document.getElementById('vkb-tab');
+    const vw=window.innerWidth;
+    const vkbLeft=parseInt(vkb.style.left)||0;
+    if(tab){
+      if(vkbLeft+vkb.offsetWidth/2 > vw/2){
+        tab.style.right='0';tab.style.left='auto';
+        tab.style.borderRadius='4px 0 0 4px';
+      } else {
+        tab.style.left='0';tab.style.right='auto';
+        tab.style.borderRadius='0 4px 4px 0';
+      }
+      const vkbTop=parseInt(vkb.style.top)||0;
+      tab.style.top=(vkbTop+vkb.offsetHeight/2-30)+'px';
+      tab.style.transform='none';
+    }
   }
-
-  // ---- Touch events on handle ----
-  handle.addEventListener('touchstart',function(e){
-    if(e.touches.length!==1)return;
-    beginDrag(e.touches[0].clientX,e.touches[0].clientY);
-    e.preventDefault();
-    e.stopPropagation();
-  },{passive:false,capture:true});
-
-  handle.addEventListener('touchmove',function(e){
-    if(!isDragging)return;
-    doMove(e.touches[0].clientX,e.touches[0].clientY);
-    e.preventDefault();
-    e.stopPropagation();
-  },{passive:false,capture:true});
-
-  handle.addEventListener('touchend',endDrag,{passive:true});
-  handle.addEventListener('touchcancel',endDrag,{passive:true});
-
-  // ---- Mouse events ----
-  handle.addEventListener('mousedown',function(e){
-    beginDrag(e.clientX,e.clientY);
-    e.preventDefault();
-  });
-
-  document.addEventListener('mousemove',function(e){
-    doMove(e.clientX,e.clientY);
-  });
-
-  document.addEventListener('mouseup',endDrag);
+  hdr.addEventListener('mousedown',onStart);
+  hdr.addEventListener('touchstart',onStart,{passive:false});
+  document.addEventListener('mousemove',onMove);
+  document.addEventListener('touchmove',onMove,{passive:false});
+  document.addEventListener('mouseup',onEnd);
+  document.addEventListener('touchend',onEnd);
 }
 
 function setVKBLang(lang){
@@ -3916,8 +3975,8 @@ function renderVKB(){
       let lbl=k;
       if(k==='⌫'){cls+=' wide danger';lbl='⌫';}
       else if(k==='⇧'){cls+=vkbShift?' wide special pressed-shift':' wide special';lbl='⇧';}
-      else if(k==='مسافة'||k==='espace'){cls+=' widest special';lbl=k==='مسافة'?'مسافة':'espace';}
-      else if(k==='↵'){cls+=' wider action';lbl='↵';}
+      else if(k==='مسافة'||k==='espace'){cls+=' widest special';lbl=k==='مسافة'?'━━━━━━':'━━━━━━';}
+      else if(k==='↵'){cls+=' wider action';lbl='⏎';}
       else if(/^[0-9]$/.test(k)&&(vkbLang==='ar'||vkbLang==='fr')){cls+=' num-key';}
       const action=k==='⌫'?`vkbPress('⌫')`
         :k==='⇧'?`toggleVKBShift()`
